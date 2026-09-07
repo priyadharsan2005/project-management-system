@@ -1,0 +1,276 @@
+<div class="projects-container">
+
+  <!-- ================= HEADER ================= -->
+
+  <div class="page-header">
+
+    <h1>Projects</h1>
+
+    <p>
+      Create, manage and assign project managers
+    </p>
+
+  </div>
+
+
+  <!-- ================= SUCCESS ================= -->
+
+  <p
+    *ngIf="successMessage"
+    class="success">
+
+    {{ successMessage }}
+
+  </p>
+
+
+  <!-- ================= ERROR ================= -->
+
+  <p
+    *ngIf="errorMessage"
+    class="error">
+
+    {{ errorMessage }}
+
+  </p>
+
+
+  <!-- ================= PROJECT FORM ================= -->
+
+  <div class="project-form">
+
+    <h2>
+      {{ editing ? 'Edit Project' : 'Add Project' }}
+    </h2>
+
+
+    <!-- PROJECT NAME -->
+
+    <div class="form-group">
+
+      <label>
+        Project Name
+      </label>
+
+      <input
+        type="text"
+        [(ngModel)]="project.name"
+        placeholder="Enter project name">
+
+    </div>
+
+
+    <!-- DESCRIPTION -->
+
+    <div class="form-group">
+
+      <label>
+        Description
+      </label>
+
+      <textarea
+        [(ngModel)]="project.description"
+        placeholder="Enter project description">
+      </textarea>
+
+    </div>
+
+
+    <!-- STATUS -->
+
+    <div class="form-group">
+
+      <label>
+        Status
+      </label>
+
+      <select
+        [(ngModel)]="project.status">
+
+        <option value="ACTIVE">
+          ACTIVE
+        </option>
+
+        <option value="IN_PROGRESS">
+          IN PROGRESS
+        </option>
+
+        <option value="COMPLETED">
+          COMPLETED
+        </option>
+
+        <option value="ON_HOLD">
+          ON HOLD
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <!-- ================= MANAGER ================= -->
+
+    <div class="form-group">
+
+      <label>
+        Project Manager
+      </label>
+
+      <select
+        [(ngModel)]="selectedManagerId">
+
+        <option [ngValue]="null">
+          Select Project Manager
+        </option>
+
+        <option
+  *ngFor="let user of users"
+  [ngValue]="user.id">
+  {{ user.name }} ({{ user.role }})
+</option>
+
+      </select>
+
+    </div>
+
+
+    <!-- ================= BUTTONS ================= -->
+
+    <div class="form-actions">
+
+      <button
+        class="primary-btn"
+        (click)="saveProject()"
+        [disabled]="saving">
+
+        {{
+          saving
+            ? 'Saving...'
+            : (editing
+                ? 'Update Project'
+                : 'Add Project')
+        }}
+
+      </button>
+
+
+      <button
+        *ngIf="editing"
+        class="cancel-btn"
+        (click)="resetForm()"
+        [disabled]="saving">
+
+        Cancel
+
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= LOADING ================= -->
+
+  <p
+    *ngIf="loading"
+    class="loading">
+
+    Loading projects...
+
+  </p>
+
+
+  <!-- ================= PROJECT LIST ================= -->
+
+  <div
+    class="projects-list"
+    *ngIf="!loading">
+
+    <div class="list-header">
+
+      <h2>
+        Project List
+      </h2>
+
+      <span>
+        {{ projects.length }} project(s)
+      </span>
+
+    </div>
+
+
+    <!-- ================= PROJECT CARDS ================= -->
+
+    <div
+      class="project-card"
+      *ngFor="let project of projects">
+
+      <div class="project-info">
+
+        <h3>
+          {{ project.name }}
+        </h3>
+
+        <p>
+          {{ project.description || 'No description' }}
+        </p>
+
+
+        <div class="project-details">
+
+          <span>
+            ID: {{ project.id }}
+          </span>
+
+          <span>
+            Status: {{ project.status }}
+          </span>
+
+          <span>
+            Manager:
+            {{ project.manager?.name || 'Not assigned' }}
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- ACTIONS -->
+
+      <div class="actions">
+
+        <button
+          class="edit-btn"
+          (click)="editProject(project)">
+
+          Edit
+
+        </button>
+
+        <button
+          class="delete-btn"
+          (click)="deleteProject(project.id!)">
+
+          Delete
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- ================= EMPTY ================= -->
+
+    <div
+      *ngIf="projects.length === 0"
+      class="no-projects">
+
+      No projects found.
+
+    </div>
+
+  </div>
+
+</div>

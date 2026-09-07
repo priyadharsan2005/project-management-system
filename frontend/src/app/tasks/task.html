@@ -1,0 +1,624 @@
+<div class="tasks-container">
+
+  <!-- ================= HEADER ================= -->
+
+  <div class="tasks-header">
+
+    <div>
+      <h1>Tasks</h1>
+      <p>Manage and track project tasks</p>
+    </div>
+
+    <button
+      class="create-button"
+      (click)="openCreateForm()">
+      + Create Task
+    </button>
+
+  </div>
+
+
+  <!-- ================= SUCCESS MESSAGE ================= -->
+
+  <div
+    *ngIf="successMessage"
+    class="success-message">
+
+    {{ successMessage }}
+
+  </div>
+
+
+  <!-- ================= ERROR MESSAGE ================= -->
+
+  <div
+    *ngIf="errorMessage"
+    class="error-message">
+
+    {{ errorMessage }}
+
+  </div>
+
+
+  <!-- ================= CREATE / EDIT TASK FORM ================= -->
+
+  <div
+    *ngIf="showForm"
+    class="task-form-card">
+
+    <h2>
+      {{ editing ? 'Edit Task' : 'Create New Task' }}
+    </h2>
+
+
+    <form (ngSubmit)="createTask()">
+
+      <!-- Task Title -->
+
+      <div class="form-group">
+
+        <label for="title">
+          Task Title
+        </label>
+
+        <input
+          id="title"
+          type="text"
+          name="title"
+          [(ngModel)]="task.title"
+          placeholder="Enter task title"
+          required>
+
+      </div>
+
+
+      <!-- Description -->
+
+      <div class="form-group">
+
+        <label for="description">
+          Description
+        </label>
+
+        <textarea
+          id="description"
+          name="description"
+          [(ngModel)]="task.description"
+          placeholder="Enter task description"
+          rows="4">
+        </textarea>
+
+      </div>
+
+
+      <!-- Status -->
+
+      <div class="form-group">
+
+        <label for="status">
+          Status
+        </label>
+
+        <select
+          id="status"
+          name="status"
+          [(ngModel)]="task.status">
+
+          <option value="TODO">
+            TODO
+          </option>
+
+          <option value="IN_PROGRESS">
+            IN PROGRESS
+          </option>
+
+          <option value="COMPLETED">
+            COMPLETED
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <!-- Due Date -->
+
+      <div class="form-group">
+
+        <label for="dueDate">
+          Due Date
+        </label>
+
+        <input
+          id="dueDate"
+          type="date"
+          name="dueDate"
+          [(ngModel)]="task.dueDate"
+          required>
+
+      </div>
+
+
+      <!-- ================= PROJECT ================= -->
+
+      <div class="form-group">
+
+        <label for="project">
+          Project
+        </label>
+
+        <select
+          id="project"
+          name="project"
+          [(ngModel)]="selectedProjectId"
+          required>
+
+          <option [ngValue]="null">
+            Select Project
+          </option>
+
+          <option
+            *ngFor="let project of projects"
+            [ngValue]="project.id">
+
+            {{ project.name }}
+
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <!-- ================= ASSIGNED USER ================= -->
+
+      <div class="form-group">
+
+        <label for="assignedUser">
+          Assign User
+        </label>
+
+        <select
+          id="assignedUser"
+          name="assignedUser"
+          [(ngModel)]="selectedUserId"
+          required>
+
+          <option [ngValue]="null">
+            Select User
+          </option>
+
+          <option
+            *ngFor="let user of users"
+            [ngValue]="user.id">
+
+            {{ user.name }} ({{ user.role }})
+
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <!-- ================= FORM BUTTONS ================= -->
+
+      <div class="form-actions">
+
+        <button
+          type="submit"
+          class="save-button"
+          [disabled]="saving">
+
+          {{
+            saving
+              ? (editing ? 'Updating...' : 'Creating...')
+              : (editing ? 'Update Task' : 'Create Task')
+          }}
+
+        </button>
+
+
+        <button
+          type="button"
+          class="cancel-button"
+          (click)="cancelCreate()"
+          [disabled]="saving">
+
+          Cancel
+
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+
+  <!-- ================= SEARCH AND FILTER ================= -->
+
+  <div class="filter-card">
+
+    <!-- Search -->
+
+    <div class="filter-group">
+
+      <label for="searchTitle">
+        Search Task
+      </label>
+
+      <input
+        id="searchTitle"
+        type="text"
+        name="searchTitle"
+        [(ngModel)]="searchTitle"
+        placeholder="Search by task title"
+        (keyup.enter)="searchTasks()">
+
+    </div>
+
+
+    <!-- Status Filter -->
+
+    <div class="filter-group">
+
+      <label for="statusFilter">
+        Status
+      </label>
+
+      <select
+        id="statusFilter"
+        name="statusFilter"
+        [(ngModel)]="selectedStatus">
+
+        <option value="">
+          All Status
+        </option>
+
+        <option value="TODO">
+          TODO
+        </option>
+
+        <option value="IN_PROGRESS">
+          IN PROGRESS
+        </option>
+
+        <option value="COMPLETED">
+          COMPLETED
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <!-- Filter Buttons -->
+
+    <div class="filter-actions">
+
+      <button
+        type="button"
+        class="search-button"
+        (click)="searchTasks()">
+
+        Search
+
+      </button>
+
+
+      <button
+        type="button"
+        class="clear-button"
+        (click)="clearFilters()">
+
+        Clear
+
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= LOADING ================= -->
+
+  <p *ngIf="loading">
+    Loading tasks...
+  </p>
+
+
+  <!-- ================= TASK TABLE ================= -->
+
+  <div
+    class="table-card"
+    *ngIf="!loading && tasks.length > 0">
+
+    <table>
+
+      <!-- TABLE HEADER -->
+
+      <thead>
+
+        <tr>
+
+          <!-- ID -->
+
+          <th
+            class="sortable"
+            (click)="changeSort('id')">
+
+            ID
+
+            <span *ngIf="sortBy === 'id'">
+              {{ direction === 'asc' ? '↑' : '↓' }}
+            </span>
+
+          </th>
+
+
+          <!-- TITLE -->
+
+          <th
+            class="sortable"
+            (click)="changeSort('title')">
+
+            Title
+
+            <span *ngIf="sortBy === 'title'">
+              {{ direction === 'asc' ? '↑' : '↓' }}
+            </span>
+
+          </th>
+
+
+          <!-- DESCRIPTION -->
+
+          <th>
+            Description
+          </th>
+
+
+          <!-- STATUS -->
+
+          <th
+            class="sortable"
+            (click)="changeSort('status')">
+
+            Status
+
+            <span *ngIf="sortBy === 'status'">
+              {{ direction === 'asc' ? '↑' : '↓' }}
+            </span>
+
+          </th>
+
+
+          <!-- DUE DATE -->
+
+          <th
+            class="sortable"
+            (click)="changeSort('dueDate')">
+
+            Due Date
+
+            <span *ngIf="sortBy === 'dueDate'">
+              {{ direction === 'asc' ? '↑' : '↓' }}
+            </span>
+
+          </th>
+
+
+          <!-- PROJECT -->
+
+          <th>
+            Project
+          </th>
+
+
+          <!-- USER -->
+
+          <th>
+            Assigned User
+          </th>
+
+
+          <!-- ACTIONS -->
+
+          <th>
+            Actions
+          </th>
+
+        </tr>
+
+      </thead>
+
+
+      <!-- TABLE BODY -->
+
+      <tbody>
+
+        <tr *ngFor="let task of tasks">
+
+          <!-- ID -->
+
+          <td>
+            {{ task.id }}
+          </td>
+
+
+          <!-- TITLE -->
+
+          <td class="task-title">
+            {{ task.title }}
+          </td>
+
+
+          <!-- DESCRIPTION -->
+
+          <td>
+            {{ task.description || '-' }}
+          </td>
+
+
+          <!-- STATUS -->
+
+          <td>
+
+            <span
+              class="status"
+              [ngClass]="{
+                'todo': task.status === 'TODO',
+                'in-progress': task.status === 'IN_PROGRESS',
+                'completed': task.status === 'COMPLETED'
+              }">
+
+              {{ task.status }}
+
+            </span>
+
+          </td>
+
+
+          <!-- DUE DATE -->
+
+          <td>
+            {{ task.dueDate }}
+          </td>
+
+
+          <!-- PROJECT -->
+
+          <td>
+            {{ task.project?.name || 'Not assigned' }}
+          </td>
+
+
+          <!-- ASSIGNED USER -->
+
+          <td>
+            {{ task.assignedUser?.name || 'Not assigned' }}
+          </td>
+
+
+          <!-- ACTIONS -->
+
+          <td class="actions">
+
+            <button
+              type="button"
+              class="edit-button"
+              (click)="editTask(task)">
+
+              Edit
+
+            </button>
+
+
+            <button
+              type="button"
+              class="delete-button"
+              (click)="deleteTask(task.id!)">
+
+              Delete
+
+            </button>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+
+  <!-- ================= PAGINATION ================= -->
+
+  <div
+    class="pagination-card"
+    *ngIf="!loading && totalElements > 0">
+
+    <!-- Pagination Info -->
+
+    <div class="pagination-info">
+
+      Showing
+      {{ currentPage * pageSize + 1 }}
+      -
+      {{ currentPage * pageSize + tasks.length }}
+      of
+      {{ totalElements }}
+      tasks
+
+    </div>
+
+
+    <!-- Pagination Buttons -->
+
+    <div class="pagination-buttons">
+
+      <button
+        type="button"
+        class="page-button"
+        (click)="previousPage()"
+        [disabled]="currentPage === 0">
+
+        Previous
+
+      </button>
+
+
+      <span class="page-number">
+
+        Page
+        {{ currentPage + 1 }}
+        of
+        {{ totalPages }}
+
+      </span>
+
+
+      <button
+        type="button"
+        class="page-button"
+        (click)="nextPage()"
+        [disabled]="currentPage >= totalPages - 1">
+
+        Next
+
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= NO TASKS ================= -->
+
+  <div
+    class="empty-state"
+    *ngIf="!loading && tasks.length === 0 && !errorMessage">
+
+    <h2>
+      No tasks found
+    </h2>
+
+    <p>
+      Create your first task to get started.
+    </p>
+
+    <button
+      type="button"
+      class="create-button"
+      (click)="openCreateForm()">
+
+      + Create Task
+
+    </button>
+
+  </div>
+
+</div>

@@ -1,0 +1,306 @@
+<div class="users-container">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+
+    <div>
+      <h1>Employees</h1>
+
+      <p>
+        Create and manage employees in your
+        project management system.
+      </p>
+    </div>
+
+  </div>
+
+
+  <!-- SUCCESS MESSAGE -->
+  <div
+    class="success"
+    *ngIf="successMessage"
+  >
+    {{ successMessage }}
+  </div>
+
+
+  <!-- ERROR MESSAGE -->
+  <div
+    class="error"
+    *ngIf="errorMessage"
+  >
+    {{ errorMessage }}
+  </div>
+
+
+  <!-- FORM -->
+  <div class="user-form">
+
+    <h2>
+      {{ editing
+        ? 'Edit Employee'
+        : 'Create Employee'
+      }}
+    </h2>
+
+
+    <div class="form-row">
+
+      <!-- NAME -->
+      <div class="form-group">
+
+        <label>Name</label>
+
+        <input
+          type="text"
+          [(ngModel)]="user.name"
+          placeholder="Enter employee name"
+        />
+
+      </div>
+
+
+      <!-- EMAIL -->
+      <div class="form-group">
+
+        <label>Email</label>
+
+        <input
+          type="email"
+          [(ngModel)]="user.email"
+          placeholder="Enter employee email"
+        />
+
+      </div>
+
+    </div>
+
+
+    <div class="form-row">
+
+      <!-- ROLE -->
+      <div class="form-group">
+
+        <label>Role</label>
+
+        <select
+          [(ngModel)]="user.role"
+        >
+
+          <option value="EMPLOYEE">
+            EMPLOYEE
+          </option>
+
+          <option value="MANAGER">
+            MANAGER
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <!-- PASSWORD -->
+      <div class="form-group">
+
+        <label>
+          Password
+
+          <span *ngIf="editing">
+            (enter new password)
+          </span>
+
+        </label>
+
+        <input
+          type="password"
+          [(ngModel)]="user.password"
+          placeholder="Enter password"
+        />
+
+      </div>
+
+    </div>
+
+
+    <!-- BUTTONS -->
+    <div class="form-actions">
+
+      <button
+        class="primary-btn"
+        [disabled]="saving"
+        (click)="saveUser()"
+      >
+
+        {{
+          saving
+            ? 'Saving...'
+            : (
+                editing
+                  ? 'Update Employee'
+                  : 'Create Employee'
+              )
+        }}
+
+      </button>
+
+
+      <button
+        *ngIf="editing"
+        class="cancel-btn"
+        [disabled]="saving"
+        (click)="resetForm()"
+      >
+
+        Cancel
+
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- EMPLOYEE LIST -->
+  <div class="users-list">
+
+    <div class="list-header">
+
+      <div>
+
+        <h2>Employee List</h2>
+
+        <span>
+          {{ users.length }} employee(s)
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- LOADING -->
+    <div
+      class="loading"
+      *ngIf="loading"
+    >
+
+      Loading employees...
+
+    </div>
+
+
+    <!-- EMPTY -->
+    <div
+      class="no-users"
+      *ngIf="
+        !loading &&
+        users.length === 0
+      "
+    >
+
+      <div class="empty-icon">
+        👥
+      </div>
+
+      <h3>
+        No employees found
+      </h3>
+
+      <p>
+        Create your first employee
+        using the form above.
+      </p>
+
+    </div>
+
+
+    <!-- EMPLOYEE CARDS -->
+    <div
+      class="user-card"
+      *ngFor="let user of users"
+    >
+
+      <div class="user-info">
+
+
+        <!-- NAME -->
+        <div class="user-name">
+
+          <div class="avatar">
+
+            {{
+              user.name
+                .charAt(0)
+                .toUpperCase()
+            }}
+
+          </div>
+
+
+          <div>
+
+            <h3>
+              {{ user.name }}
+            </h3>
+
+            <p>
+              {{ user.email }}
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- ROLE -->
+        <div class="user-details">
+
+          <span
+            class="role-badge"
+            [class.manager]="
+              user.role === 'MANAGER'
+            "
+            [class.employee]="
+              user.role === 'EMPLOYEE'
+            "
+          >
+
+            {{ user.role }}
+
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- ACTIONS -->
+      <div class="actions">
+
+        <button
+          class="edit-btn"
+          (click)="editUser(user)"
+        >
+
+          Edit
+
+        </button>
+
+
+        <button
+          class="delete-btn"
+          (click)="deleteUser(user.id!)"
+        >
+
+          Delete
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

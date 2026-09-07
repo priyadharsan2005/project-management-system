@@ -1,0 +1,426 @@
+<!-- =====================================================
+     MANAGER DASHBOARD
+     ===================================================== -->
+
+<div
+  class="dashboard-container"
+  *ngIf="role === 'MANAGER'"
+>
+
+  <div class="dashboard-header">
+
+    <div>
+      <h1>Project Management Dashboard</h1>
+
+      <p>
+        Welcome back! Here's an overview of your projects and tasks.
+      </p>
+    </div>
+
+    <div class="role-badge">
+      Role:
+      <strong>{{ role }}</strong>
+    </div>
+
+  </div>
+
+
+  <!-- ================= STATS ================= -->
+
+  <div class="stats-grid">
+
+    <div class="stat-card">
+
+      <div class="stat-icon">📁</div>
+
+      <div>
+        <p>Total Projects</p>
+        <h2>{{ totalProjects }}</h2>
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-icon">✅</div>
+
+      <div>
+        <p>Total Tasks</p>
+        <h2>{{ totalTasks }}</h2>
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-icon">👥</div>
+
+      <div>
+        <p>Total Employees</p>
+        <h2>{{ totalEmployees }}</h2>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= TASK OVERVIEW ================= -->
+
+  <div class="section">
+
+    <h2>Task Overview</h2>
+
+    <div class="task-status-grid">
+
+      <div class="status-card">
+
+        <div class="status-number">
+          {{ todoTasks }}
+        </div>
+
+        <div>
+          <h3>TODO</h3>
+          <p>Tasks waiting to be started</p>
+        </div>
+
+      </div>
+
+
+      <div class="status-card">
+
+        <div class="status-number">
+          {{ inProgressTasks }}
+        </div>
+
+        <div>
+          <h3>In Progress</h3>
+          <p>Tasks currently being worked on</p>
+        </div>
+
+      </div>
+
+
+      <div class="status-card">
+
+        <div class="status-number">
+          {{ completedTasks }}
+        </div>
+
+        <div>
+          <h3>Completed</h3>
+          <p>Successfully completed tasks</p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= NAVIGATION ================= -->
+
+  <div class="section">
+
+    <h2>Manage Your Workspace</h2>
+
+    <p class="section-description">
+      Quickly access your projects, tasks and users.
+    </p>
+
+
+    <div class="navigation-grid">
+
+      <div
+        class="navigation-card"
+        (click)="goToProjects()"
+      >
+
+        <div class="navigation-icon">📁</div>
+
+        <div>
+          <h3>Projects</h3>
+          <p>
+            Create, edit and manage projects and project managers.
+          </p>
+        </div>
+
+        <span class="arrow">→</span>
+
+      </div>
+
+
+      <div
+        class="navigation-card"
+        (click)="goToTasks()"
+      >
+
+        <div class="navigation-icon">✅</div>
+
+        <div>
+          <h3>Tasks</h3>
+          <p>
+            Create, assign, track and manage project tasks.
+          </p>
+        </div>
+
+        <span class="arrow">→</span>
+
+      </div>
+
+
+      <div
+        class="navigation-card"
+        (click)="goToUsers()"
+      >
+
+        <div class="navigation-icon">👥</div>
+
+        <div>
+          <h3>Users</h3>
+          <p>
+            Manage users, roles and account information.
+          </p>
+        </div>
+
+        <span class="arrow">→</span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     USER DASHBOARD
+     ===================================================== -->
+
+<div
+  class="dashboard-container user-dashboard"
+  *ngIf="role !== 'MANAGER'"
+>
+
+  <!-- ================= HEADER ================= -->
+
+  <div class="dashboard-header">
+
+    <div>
+
+      <h1>My Dashboard</h1>
+
+      <p>
+        Welcome back, {{ userName }}!
+        Here are your assigned tasks.
+      </p>
+
+    </div>
+
+
+    <div class="role-badge">
+      Role:
+      <strong>{{ role }}</strong>
+    </div>
+
+  </div>
+
+
+  <!-- ================= TASK COUNTS ================= -->
+
+  <div class="stats-grid">
+
+    <div class="stat-card">
+
+      <div class="stat-icon">📋</div>
+
+      <div>
+        <p>My Tasks</p>
+        <h2>{{ totalTasks }}</h2>
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-icon">📝</div>
+
+      <div>
+        <p>TODO</p>
+        <h2>{{ todoTasks }}</h2>
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-icon">⚙️</div>
+
+      <div>
+        <p>In Progress</p>
+        <h2>{{ inProgressTasks }}</h2>
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-icon">🎉</div>
+
+      <div>
+        <p>Completed</p>
+        <h2>{{ completedTasks }}</h2>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= MY TASKS ================= -->
+
+  <div class="section">
+
+    <div class="section-heading">
+
+      <div>
+
+        <h2>My Assigned Tasks</h2>
+
+        <p class="section-description">
+          Update the status of your assigned tasks.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <!-- Loading -->
+
+    <div
+      class="loading-box"
+      *ngIf="loadingTasks"
+    >
+      Loading your tasks...
+    </div>
+
+
+    <!-- Error -->
+
+    <div
+      class="error-box"
+      *ngIf="userError"
+    >
+      {{ userError }}
+    </div>
+
+
+    <!-- No tasks -->
+
+    <div
+      class="no-tasks"
+      *ngIf="!loadingTasks && myTasks.length === 0 && !userError"
+    >
+
+      <div class="empty-icon">📋</div>
+
+      <h3>No tasks assigned</h3>
+
+      <p>
+        You currently don't have any tasks assigned to you.
+      </p>
+
+    </div>
+
+
+    <!-- Task list -->
+
+    <div
+      class="user-task-list"
+      *ngIf="!loadingTasks && myTasks.length > 0"
+    >
+
+      <div
+        class="user-task-card"
+        *ngFor="let task of myTasks"
+      >
+
+        <div class="task-main">
+
+          <h3>{{ task.title }}</h3>
+
+          <p
+            class="task-description"
+            *ngIf="task.description"
+          >
+            {{ task.description }}
+          </p>
+
+
+          <div class="task-meta">
+
+            <span *ngIf="task.project">
+              📁 {{ task.project.name }}
+            </span>
+
+            <span *ngIf="task.dueDate">
+              📅 {{ task.dueDate }}
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <!-- Status -->
+
+        <div class="task-status">
+
+          <label>Status</label>
+
+          <select
+            [value]="task.status"
+            [disabled]="updatingTaskId === task.id"
+            (change)="updateTaskStatus(task, $any($event.target).value)"
+          >
+
+            <option value="TODO">
+              TODO
+            </option>
+
+            <option value="IN_PROGRESS">
+              IN PROGRESS
+            </option>
+
+            <option value="COMPLETED">
+              COMPLETED
+            </option>
+
+          </select>
+
+
+          <span
+            class="updating"
+            *ngIf="updatingTaskId === task.id"
+          >
+            Updating...
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
